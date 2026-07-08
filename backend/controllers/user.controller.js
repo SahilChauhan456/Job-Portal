@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
-    const { fullName, email, password, phoneNumber, role } = req.body;
+    const { fullname, email, password, phoneNumber, role } = req.body;
 
-    if (!fullName || !email || password || phoneNumber || role) {
+    if (!fullname || !email || !password || !phoneNumber || !role) {
       return res.status(400).json({
         message: "Something is missing",
         sucess: false,
@@ -25,7 +25,7 @@ export const register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     await User.create({
-      fullName,
+      fullname,
       email,
       phoneNumber,
       password: hashPassword,
@@ -90,7 +90,7 @@ export const login = async (req, res) => {
     };
     return res
       .status(200)
-      .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpsOnly: true, sameSite: "strict" })
+      .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: "strict" })
       .json({
         message: `Welcome back ${user.fullname}`,
         user,
@@ -117,16 +117,13 @@ export const updateProfile = async (req, res) => {
     const { fullname, phoneNumber, email, bio, skills } = req.body;
     const file = req.file;
 
-    if (!fullname || !phoneNumber || !email || !bio || !skills) {
-      return res.status(400).json({
-        message: "Something is missing",
-        success: false,
-      });
-    }
-
     //cloudinary for image
 
-    const skillArray = skills.split(",");
+    let skillArray;
+    if (skills) {
+      skillArray = skills.split(",");
+    }
+
     const userId = req.id; //middleware authentication
 
     let user = await User.findById(userId);
@@ -139,8 +136,11 @@ export const updateProfile = async (req, res) => {
     }
 
     //updating data
-
-    ((user.fullname = fullname), (user.email = email), (user.phoneNumber = phoneNumber), (user.profile.bio = bio), (user.profile.skills = skillArray));
+    if (fullname) user.fullname = fullname;
+    if (email) user.email = email;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (bio) user.profile.bio = bio;
+    if (skills) user.profile.skills = skillArray;
 
     //resume comes later here
     await user.save();
