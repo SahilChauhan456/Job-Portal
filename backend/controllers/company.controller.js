@@ -2,6 +2,7 @@ import { Company } from "../models/company.model.js";
 
 export const registerCompany = async (req, res) => {
   try {
+    console.log("Check the api");
     const { companyName } = req.body;
     if (!companyName) {
       return res.status(400).json({
@@ -41,6 +42,10 @@ export const getCompanies = async (req, res) => {
         success: false,
       });
     }
+    return res.status(200).json({
+      companies,
+      success: true,
+    });
   } catch (error) {
     console.log(error);
   }
