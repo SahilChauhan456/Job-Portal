@@ -78,7 +78,7 @@ export const updateCompany = async (req, res) => {
     const file = req.file;
     //cloudinary here
 
-    const updateData = { name, description, webstite, location };
+    const updateData = { name, description, website, location };
     const company = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!company) {
       return res.status(404).json({

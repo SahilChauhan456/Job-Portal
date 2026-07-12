@@ -9,21 +9,27 @@ const isAuthenticated = async (req, res, next) => {
         message: "User not Authenticated",
         success: false,
       });
-      const decode = await jwt.verify(token, process.env.SECRET_KEY);
-      console.log("decode", decode);
-      if (!decode) {
-        return res.status(401).json({
-          message: "Invalid token",
-          success: false,
-        });
-      }
-      req.id = decode.userId;
-      console.log(req.id);
-
-      next();
     }
+
+    const decode = jwt.verify(token, process.env.SECRET_KEY);
+
+    if (!decode) {
+      return res.status(401).json({
+        message: "Invalid token",
+        success: false,
+      });
+    }
+
+    req.id = decode.userId;
+
+    next();
   } catch (error) {
     console.log(error);
+
+    return res.status(401).json({
+      message: "Authentication failed",
+      success: false,
+    });
   }
 };
 
