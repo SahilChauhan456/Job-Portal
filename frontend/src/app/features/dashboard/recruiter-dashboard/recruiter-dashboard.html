@@ -1,0 +1,112 @@
+<section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <h2 class="text-3xl font-bold text-slate-800">Recruiter Dashboard</h2>
+        <p class="mt-2 text-slate-500">Post jobs and review the opportunities you have created.</p>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="text-xl font-semibold text-slate-800">Create a new job</h3>
+
+        <form class="mt-4 grid gap-4 md:grid-cols-2" (ngSubmit)="createJob()">
+            <input [(ngModel)]="title" name="title" placeholder="Job title"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input [(ngModel)]="location" name="location" placeholder="Location"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input [(ngModel)]="salary" name="salary" type="number" placeholder="Salary"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input [(ngModel)]="position" name="position" placeholder="Position"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input [(ngModel)]="jobType" name="jobType" placeholder="Job type"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input [(ngModel)]="experience" name="experience" placeholder="Experience level"
+                class="rounded-lg border border-slate-300 px-3 py-2" />
+            <textarea [(ngModel)]="description" name="description" rows="3" placeholder="Description"
+                class="md:col-span-2 rounded-lg border border-slate-300 px-3 py-2"></textarea>
+            <input [(ngModel)]="requirements" name="requirements" placeholder="Requirements (comma separated)"
+                class="md:col-span-2 rounded-lg border border-slate-300 px-3 py-2" />
+            <div class="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Create company</h4>
+                <div class="mt-2 flex flex-col gap-2 sm:flex-row">
+                    <input [(ngModel)]="companyName" name="companyName" placeholder="Company name"
+                        class="flex-1 rounded-lg border border-slate-300 px-3 py-2" />
+                    <button type="button" (click)="createCompanyFirst()"
+                        class="rounded-lg bg-teal-600 px-4 py-2.5 font-semibold text-white">Create Company</button>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-600">My companies</h4>
+                @if (loadingCompanies) {
+                <p class="mt-2 text-sm text-slate-500">Loading your companies...</p>
+                }
+                @if (!loadingCompanies && companies.length === 0) {
+                <p class="mt-2 text-sm text-slate-500">No companies created yet.</p>
+                }
+                @if (!loadingCompanies && companies.length > 0) {
+                <div class="mt-2 flex flex-wrap gap-2">
+                    @for (company of companies; track company._id) {
+                    <span class="rounded-full border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700">
+                        {{ company.name }}
+                    </span>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Select company for this job
+                </h4>
+                <div class="mt-2 flex flex-col gap-2">
+                    @if (loadingCompanies) {
+                    <p class="text-sm text-slate-500">Loading your companies...</p>
+                    }
+
+                    @if (!loadingCompanies && companies.length === 0) {
+                    <p class="text-sm text-slate-500">No companies created yet. Create one above first.</p>
+                    }
+
+                    @if (!loadingCompanies && companies.length > 0) {
+                    <select [(ngModel)]="selectedCompanyId" name="selectedCompanyId"
+                        class="rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Choose a company</option>
+                        @for (company of companies; track company._id) {
+                        <option [value]="company._id">{{ company.name }}</option>
+                        }
+                    </select>
+                    <p class="text-sm text-slate-500">Selected company: {{ companyName || 'None' }}</p>
+                    }
+                </div>
+            </div>
+
+            <button type="submit" [disabled]="!selectedCompanyId"
+                class="md:col-span-2 rounded-lg bg-blue-900 px-4 py-2.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">Create
+                Job</button>
+        </form>
+    </div>
+
+    <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="text-xl font-semibold text-slate-800">Your posted jobs</h3>
+
+        @if (loading) {
+        <p class="mt-4 text-slate-500">Loading your jobs...</p>
+        }
+
+        @if (!loading && postedJobs.length === 0) {
+        <p class="mt-4 text-slate-500">No jobs posted yet.</p>
+        }
+
+        <div class="mt-4 grid gap-4">
+            @for (job of postedJobs; track job._id) {
+            <div class="rounded-xl border border-slate-200 p-4">
+                <div class="flex items-center justify-between gap-3">
+                    <h4 class="font-semibold text-slate-800">{{ job.title }}</h4>
+                    <span
+                        class="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-700">{{
+                        job.jobType }}</span>
+                </div>
+                <p class="mt-2 text-sm text-slate-600">{{ job.description }}</p>
+            </div>
+            }
+        </div>
+    </div>
+</section>

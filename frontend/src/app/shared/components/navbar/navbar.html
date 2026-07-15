@@ -1,0 +1,93 @@
+<!-- src/app/shared/components/navbar/navbar.component.html -->
+<nav class="bg-blue-900 text-white shadow-md px-4 py-3 sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Logo / Brand Title -->
+        <div class="flex items-center gap-2 cursor-pointer" routerLink="/" (click)="closeMenu()">
+            <mat-icon class="text-teal-400">work</mat-icon>
+            <span class="text-lg font-bold tracking-wider text-teal-400 sm:text-xl">JobPortal</span>
+        </div>
+
+        <!-- Central Context Links -->
+        <div class="hidden items-center gap-2 md:flex">
+            <a mat-button routerLink="/jobs" routerLinkActive="bg-slate-800 text-teal-400"
+                class="rounded hover:text-teal-300 transition duration-150">
+                Search Jobs
+            </a>
+
+            @if (isLoggedIn() && userRole() === 'worker') {
+            <a mat-button routerLink="/worker" routerLinkActive="bg-slate-800 text-teal-400"
+                class="rounded hover:text-teal-300 transition duration-150">
+                My Dashboard
+            </a>
+            } @else if (isLoggedIn() && userRole() === 'recruiter') {
+            <a mat-button routerLink="/recruiter" routerLinkActive="bg-slate-800 text-teal-400"
+                class="rounded hover:text-teal-300 transition duration-150">
+                Post a Job
+            </a>
+            }
+        </div>
+
+        <!-- Identity Authentication Block Actions -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            @if (!isLoggedIn()) {
+            <a mat-button color="accent" routerLink="/login"
+                class="hidden text-slate-300 hover:text-white sm:inline-flex">
+                Login
+            </a>
+            <a mat-raised-button color="accent" routerLink="/register"
+                class="inline-flex rounded-md bg-teal-500 px-3 py-2 text-sm font-semibold text-slate-900 transition duration-150 hover:bg-teal-600 sm:px-4">
+                Register
+            </a>
+            } @else {
+            <div class="hidden items-center gap-2 text-sm text-slate-200 sm:flex">
+                <span class="rounded-full bg-slate-800/70 px-3 py-1">{{ user()?.fullname }}</span>
+                <button mat-stroked-button color="accent" (click)="logout()" class="border-slate-500 text-slate-100">
+                    Logout
+                </button>
+            </div>
+            }
+
+            <button mat-icon-button class="text-slate-200 transition duration-150 hover:text-teal-300 md:hidden"
+                (click)="toggleMenu()" aria-label="Toggle navigation menu">
+                <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    @if (menuOpen()) {
+    <div class="mobile-menu mt-3 flex flex-col gap-2 rounded-lg border border-slate-700 bg-slate-900/80 p-3 md:hidden">
+        <a routerLink="/jobs" routerLinkActive="bg-slate-800 text-teal-400"
+            class="rounded px-2 py-2 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-teal-300"
+            (click)="closeMenu()">
+            Search Jobs
+        </a>
+
+        @if (isLoggedIn() && userRole() === 'worker') {
+        <a routerLink="/worker" routerLinkActive="bg-slate-800 text-teal-400"
+            class="rounded px-2 py-2 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-teal-300"
+            (click)="closeMenu()">
+            My Dashboard
+        </a>
+        } @else if (isLoggedIn() && userRole() === 'recruiter') {
+        <a routerLink="/recruiter" routerLinkActive="bg-slate-800 text-teal-400"
+            class="rounded px-2 py-2 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-teal-300"
+            (click)="closeMenu()">
+            Post a Job
+        </a>
+        }
+
+        @if (!isLoggedIn()) {
+        <a routerLink="/login"
+            class="rounded px-2 py-2 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-teal-300"
+            (click)="closeMenu()">
+            Login
+        </a>
+        <a routerLink="/register"
+            class="rounded px-2 py-2 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-teal-300"
+            (click)="closeMenu()">
+            Register
+        </a>
+        }
+    </div>
+    }
+</nav>
