@@ -16,6 +16,10 @@ export const register = async (req, res) => {
       });
     }
 
+    const file = req.file;
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
     const checkUser = await User.findOne({ email });
     if (checkUser) {
       return res.status(400).json({
@@ -32,6 +36,9 @@ export const register = async (req, res) => {
       phoneNumber,
       password: hashPassword,
       role,
+      profile: {
+        profilePhoto: cloudResponse.secure_url,
+      },
     });
 
     return res.status(201).json({
@@ -126,9 +133,6 @@ export const updateProfile = async (req, res) => {
       resource_type: "auto",
       folder: "resume",
     });
-    console.log(cloudResponse.resource_type);
-    console.log(cloudResponse.type);
-    console.log(cloudResponse.secure_url);
 
     let skillArray;
     if (skills) {
