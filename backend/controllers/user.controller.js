@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 // import cookie from "cookie-parser";
 
 export const register = async (req, res) => {
@@ -118,6 +120,15 @@ export const updateProfile = async (req, res) => {
     const file = req.file;
 
     //cloudinary for image
+    const fileUri = getDataUri(file);
+
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+      resource_type: "auto",
+      folder: "resume",
+    });
+    console.log(cloudResponse.resource_type);
+    console.log(cloudResponse.type);
+    console.log(cloudResponse.secure_url);
 
     let skillArray;
     if (skills) {
@@ -143,6 +154,12 @@ export const updateProfile = async (req, res) => {
     if (skills) user.profile.skills = skillArray;
 
     //resume comes later here
+
+    if (cloudResponse) {
+      user.profile.resume = cloudResponse.secure_url; //save the cloudinary url
+      user.profile.resumeOriginalName = file.originalname; //save the original file  name
+    }
+
     await user.save();
 
     user = {
